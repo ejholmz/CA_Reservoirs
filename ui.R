@@ -35,8 +35,8 @@ shinyUI(fluidPage(
                    leafletOutput("map", width="100%", height="730"),
                    absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
                                  draggable = TRUE, top = "auto", left = 20, right = "auto", bottom = 20,
-                                 width = 330, height = 400,
-                                 plotOutput("Histogram")
+                                 width = 250, height = 400,
+                                 plotOutput("Hist")
                    )
                )
                

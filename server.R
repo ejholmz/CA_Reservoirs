@@ -23,8 +23,10 @@ shinyServer(function(input, output) {
   # Map symbology
   observe({    
     
-    radius <- sqrt(cares$max) / max(sqrt(cares$max)) * 30000
-    radius2 <- sqrt(cares$storage) / max(sqrt(cares$max)) * 30000
+#     radius <- sqrt(cares$max) / max(sqrt(cares$max)) * 30000
+#     radius2 <- sqrt(cares$storage) / max(sqrt(cares$max)) * 30000
+    radius <- sqrt(cares$max/pi) * 750
+    radius2 <- sqrt(cares$storage/pi) * 750
     
     leafletProxy("map", data = cares) %>%
       clearShapes() %>%
@@ -56,6 +58,23 @@ shinyServer(function(input, output) {
     hist(resInBounds()$perc, main = "Histogram of % storage capacity", 
          xlab = "Percent of Capacity", ylab = "Count", xlim = c(0,100),  breaks = seq(0,100,10),
          col = "skyblue")
+  })
+
+  output$Hist <- renderPlot({
+    if (nrow(resInBounds()) == 0)
+      return(NULL)
+    
+    par(oma = c(0,0,0,2))
+    barplot(sum(resInBounds()$max),ylim = c(0, sum(resInBounds()$max)), ylab = "Storage (1000 Acre-feet)")
+    par(new = T)
+    barplot(sum(resInBounds()$storage), ylim = c(0, sum(resInBounds()$max)), col = "blue", yaxt = "n")
+    abline(h = sum(resInBounds()$avg.daily), col = "red", lwd = 4)
+    axis(side = 4, at = seq(0,1,.2)*sum(resInBounds()$max), labels = c("0%","20%","40%","60%","80%", "100%"))
+    text(x = .45,y = sum(resInBounds()$avg.daily) + .05*sum(resInBounds()$max), col = "red", cex = 1.5,
+         labels = paste(signif(sum(resInBounds()$avg.daily)/sum(resInBounds()$max)*100, 3), "%",sep = ""))
+    text(x = .95,y = sum(resInBounds()$storage) + .05*sum(resInBounds()$max), col = "blue", cex = 1.5,
+         labels = paste(signif(sum(resInBounds()$storage)/sum(resInBounds()$max)*100, 3), "%",sep = ""))
+    
   })
   
   # Show a popup at the given location
